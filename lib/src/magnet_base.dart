@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 class Magnet {
   /// The base url to which  requests are made
   static const String _baseUrl = "https://student.daystar.ac.ke";
-  Map<String, String>? _header;
+  Map<String, String> _header = {};
   DateTime? _lastLogin;
 
   final String _username;
@@ -30,12 +30,14 @@ class Magnet {
 
       // get the session _sessionId
       _header = {
-        "Cookie": response.headers["set-cookie"],
+        'Content-type': 'application/json',
+        'Cookie': response.headers["set-cookie"].toString().split(" ")[0],
       };
+
+      _sessionId = _header['Cookie'];
 
       print("fetch session: $_header");
       // var cookie = Cookie.fromSetCookieValue(_header!["set-cookie"]);
-      // _sessionId = cookie.toString().replaceAll("Path=/;", "");
       // print(_sessionId);
     }
     return;
@@ -47,11 +49,11 @@ class Magnet {
     if (_lastLogin == null ||
         _lastLogin!.isAfter(_lastLogin!.add(Duration(hours: 3)))) {
       await fetchSessionToken();
-      _header!.remove("content-length");
+      // _header.remove("content-length");
       // Send a request
       var response = await http.post(
         Uri.parse("$_baseUrl/Login/LoginUser"),
-        headers: _header as Map<String, dynamic>,
+        headers: _header,
         body: json.encode(
           {"Username": _username, "Password": _password},
         ),
@@ -65,15 +67,16 @@ class Magnet {
           throw Exception("Something went wrong: ${body["message"]}");
         }
         // Set headers
+
         _header = {
-          "Cookie": response.headers["set-cookie"],
+          'Content-type': 'application/json',
+          'Cookie': '$_sessionId ${response.headers["set-cookie"]}',
         };
         print("login headers: $_header");
 
         // Set the last login time
         _lastLogin = DateTime.now();
         await fetchUserData();
-
         return true;
       } else {
         throw Exception("Error response not 200!");
@@ -95,7 +98,7 @@ class Magnet {
       // fetch user details
       var response = await http.get(
         Uri.parse("$_baseUrl/Dashboard/Dashboard"),
-        headers: _header as Map<String, String>,
+        headers: _header,
       );
 
       if (response.statusCode != 200) {
