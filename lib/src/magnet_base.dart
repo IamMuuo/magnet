@@ -2,7 +2,7 @@
 // Magner base.dart
 
 import 'dart:convert';
-import 'dart:io';
+import 'package:html/parser.dart' as parser;
 import 'package:http/http.dart' as http;
 
 class Magnet {
@@ -76,7 +76,6 @@ class Magnet {
 
         // Set the last login time
         _lastLogin = DateTime.now();
-        await fetchUserData();
         return true;
       } else {
         throw Exception("Error response not 200!");
@@ -89,11 +88,6 @@ class Magnet {
   /// Attemot to parse the content
   Future<Map> fetchUserData() async {
     if (await login()) {
-      // var headers = {
-      //   "Cookie":
-      //       "${_header!["set-cookie"].toString().replaceAll("$_sessionId", "")}"
-      // };
-
       print("fetch user data: $_header");
       // fetch user details
       var response = await http.get(
@@ -104,8 +98,31 @@ class Magnet {
       if (response.statusCode != 200) {
         throw Exception("Error fetching student data");
       }
-      // print(response.headers);
-      print(response.body);
+      // print(response.body);
+      final document = parser.parse(response.body);
+
+      // Select all div elements with class "row mb-X"
+
+      final dataBlocks = document.querySelectorAll('div[class^="row mb-"]');
+      var data = {};
+
+      for (final dataBlock in dataBlocks) {
+        final labelElement = dataBlock.querySelector('label');
+        final valueElement = dataBlock.querySelector('.badge');
+
+        if (labelElement != null && valueElement != null) {
+          final key = labelElement.text.trim();
+          final value = valueElement.text.trim();
+
+          data[key
+              .toLowerCase()
+              .trim()
+              .replaceAll(".", "")
+              .replaceAll(" ", "")] = value.toLowerCase().trim();
+        }
+      }
+      print(data);
+      return data;
     }
     return {};
   }
