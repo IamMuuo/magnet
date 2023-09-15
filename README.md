@@ -1,6 +1,6 @@
 # 🧲 Magnet - Your Academic Data Scraping Superhero! 🦸‍♂️
 
-![Magnet Logo](assets/logo.png)
+<img src="assets/logo.png" height=100 alt="Magnet's Logo">
 
 Welcome to Magnet, your trusty sidekick in the world of web scraping! 🌍
 
