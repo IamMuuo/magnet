@@ -35,5 +35,15 @@ void main() {
     test('User data is not corrpt', () async {
       expect(data["regno"], isNotNull);
     });
+
+    var timetable = [];
+    test('Fetch TimeTable', () async {
+      timetable = await magnet.fetchTimeTable();
+      expect(timetable, isNot([{}]));
+    });
+
+    test('Timetable data is valid', () async {
+      expect(timetable.first.keys, contains("Unit"));
+    });
   });
 }
