@@ -170,4 +170,49 @@ class Magnet {
     }
     return [{}];
   }
+
+  Future<List<Map<dynamic, dynamic>>> fetchAllCourses() async {
+    if (await login()) {
+      var response = await http.get(
+        Uri.parse("$_baseUrl/Course/StudentTimetable"),
+        headers: _header,
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception(
+            "Error fetching student data, please check your internet connection");
+      }
+
+      // print(response.body);
+      final document = parser.parse(response.body);
+      final table = document.querySelector('table.table.table-hover');
+
+      var tbody = table!.querySelectorAll("tbody");
+      var rows = tbody[1].querySelectorAll("tr");
+
+      final List<Map<String, String>> dataList = [];
+      for (int i = 1; i < rows.length; i++) {
+        final cells = rows[i].querySelectorAll("td");
+        final unit = cells[0].text.trim();
+        final section = cells[1].text.trim();
+        final dayOfWeek = cells[2].text.trim();
+        final period = cells[3].text.trim();
+        final campus = cells[4].text.trim();
+        final lectureRoom = cells[5].text.trim();
+        final lecturer = cells[6].text.trim();
+
+        dataList.add({
+          'Unit': unit,
+          'Section': section,
+          'Day of Week': dayOfWeek,
+          'Period': period,
+          'Campus': campus,
+          'Lecture Room': lectureRoom,
+          'Lecturer': lecturer,
+        });
+      }
+      return dataList;
+    }
+    return [{}];
+  }
 }

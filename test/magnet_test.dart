@@ -45,5 +45,15 @@ void main() {
     test('Timetable data is valid', () async {
       expect(timetable.first.keys, contains("Unit"));
     });
+
+    var allCourses = [];
+    test('Fetch TimeTable', () async {
+      allCourses = await magnet.fetchAllCourses();
+      expect(allCourses, isNot([{}]));
+    });
+
+    test('Timetable data is valid', () async {
+      expect(allCourses.first.keys, contains("Unit"));
+    });
   });
 }
