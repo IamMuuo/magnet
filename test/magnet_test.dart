@@ -36,6 +36,9 @@ void main() {
       expect(data["regno"], isNotNull);
     });
 
+    test("profile link is present", () async {
+      expect(data["profile"], isNotNull);
+    });
     var timetable = [];
     test('Fetch TimeTable', () async {
       timetable = await magnet.fetchTimeTable();

@@ -120,6 +120,13 @@ class Magnet {
               .replaceAll(" ", "")] = value.toLowerCase().trim();
         }
       }
+      final elements = document.getElementsByClassName('rounded-circle');
+
+      if (elements.isNotEmpty) {
+        final imgElement = elements[0];
+        final src = imgElement.attributes['src'];
+        data["profile"] = src;
+      }
       // print(dat/* a) */;
       return data;
     }
