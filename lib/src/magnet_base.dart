@@ -222,4 +222,21 @@ class Magnet {
     }
     return [{}];
   }
+
+  Future<Map<String, dynamic>> fetchCateringToken() async {
+    if (await login()) {
+      var response = await http.post(
+        Uri.parse("$_baseUrl/Dashboard/GenerateNewCateringToken"),
+        headers: _header,
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception(
+            "Error fetching catering token, please check your internet connection");
+      } else {
+        return json.decode(response.body);
+      }
+    }
+    return {};
+  }
 }

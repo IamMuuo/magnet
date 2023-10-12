@@ -58,5 +58,16 @@ void main() {
     test('Timetable data is valid', () async {
       expect(allCourses.first.keys, contains("Unit"));
     });
+
+    var token = {};
+    test("Fetch Catering token", () async {
+      token = await magnet.fetchCateringToken();
+      expect(token, isNot({}));
+    });
+
+    test("Catering token is valid", () async {
+      expect(token["message"], isNotEmpty);
+      expect(token["success"], isTrue);
+    });
   });
 }
