@@ -239,4 +239,48 @@ class Magnet {
     }
     return {};
   }
+
+  // Fetches the user's class attendance
+  Future<Map<String, int>> fetchUserClassAttendance() async {
+    if (await login()) {
+      var response = await http.post(
+        Uri.parse("$_baseUrl/Dashboard/GetUnitsClassAttendance"),
+        headers: _header,
+      );
+
+      if (response.statusCode == 200) {
+        var html = response.body;
+        Map<String, int> coursesData = {};
+
+        final document = parser.parse(html);
+        final tableRows =
+            document.querySelectorAll('table.table tr td div.col-12');
+
+        for (final row in tableRows) {
+          final columns = row.children;
+
+          if (columns.length >= 2) {
+            final course = columns[0].text.trim();
+            final percentage = columns[1]
+                    .querySelector('.progress-bar')
+                    ?.attributes['style'] ??
+                '0%';
+
+            // Extract the percentage value from the style attribute
+            final match = RegExp(r'width: (\d+)%').firstMatch(percentage);
+            final extractedPercentage = match?.group(1) ?? '0';
+
+            coursesData[course] = int.parse(extractedPercentage);
+          }
+        }
+
+        return coursesData;
+      } else {
+        throw Exception(
+            "Error fetching catering token, please check your internet connection");
+      }
+    }
+
+    return {};
+  }
 }

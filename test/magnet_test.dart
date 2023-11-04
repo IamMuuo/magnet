@@ -69,5 +69,12 @@ void main() {
       expect(token["message"], isNotEmpty);
       expect(token["success"], isTrue);
     });
+
+    var courseAttendace = {};
+    test("Fetch Class Attendance", () async {
+      courseAttendace = await magnet.fetchUserClassAttendance();
+      print(courseAttendace);
+      expect(courseAttendace, isNot({}));
+    });
   });
 }
