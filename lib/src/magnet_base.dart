@@ -283,4 +283,43 @@ class Magnet {
 
     return {};
   }
+
+  Future<List<Map<String, dynamic>>> fetchFeeStatement() async {
+    if (await login()) {
+      var response = await http.get(
+        Uri.parse("$_baseUrl/Financial/FeeStatement"),
+        headers: _header,
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          "Error fetching fee statement, please check your connection and try again",
+        );
+      }
+
+      var html = response.body;
+      final statements = <Map<String, dynamic>>[];
+
+      final document = parser.parse(html);
+      final tableRows =
+          document.querySelectorAll("table.table.table-striped tbody tr");
+
+      for (var row in tableRows) {
+        var content = {
+          "posting_date": row.children[0].innerHtml,
+          "ref": row.children[1].innerHtml,
+          "description": row.children[2].innerHtml,
+          "debit": row.children[3].innerHtml,
+          "credit": row.children[4].innerHtml,
+          "running_balance": row.children[5].innerHtml,
+        };
+        statements.add(content);
+      }
+      return statements;
+    } else {
+      throw Exception(
+          "Error fetching fee statement, please check your connection and try again");
+    }
+    return [];
+  }
 }

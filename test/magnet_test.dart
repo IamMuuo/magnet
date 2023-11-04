@@ -73,8 +73,13 @@ void main() {
     var courseAttendace = {};
     test("Fetch Class Attendance", () async {
       courseAttendace = await magnet.fetchUserClassAttendance();
-      print(courseAttendace);
       expect(courseAttendace, isNot({}));
+    });
+
+    var feeStatement = [];
+    test('Fetch Fee Statement', () async {
+      feeStatement = await magnet.fetchFeeStatement();
+      expect(feeStatement, isNot([]));
     });
   });
 }
