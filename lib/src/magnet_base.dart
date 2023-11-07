@@ -249,7 +249,20 @@ class Magnet {
       );
 
       if (response.statusCode == 200) {
-        throw Exception("Not implemented");
+        // Parse the response
+        var document = parser.parse(response.body);
+
+        var tableRows = document.querySelectorAll("table tr td div.col-12");
+
+        var unitsList = <Map<String, int>>[];
+
+        for (var row in tableRows) {
+          unitsList.add({
+            row.children[0].innerHtml: int.parse(
+                row.children[1].children[0].attributes["aria-valuenow"] ?? "0")
+          });
+        }
+        return unitsList;
       } else {
         throw Exception(
             "Error fetching catering token, please check your internet connection");

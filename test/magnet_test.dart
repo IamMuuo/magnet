@@ -73,7 +73,6 @@ void main() {
     var courseAttendace = <Map<String, int>>[];
     test("Fetch Class Attendance", () async {
       courseAttendace = await magnet.fetchUserClassAttendance();
-      print(courseAttendace);
       expect(courseAttendace, isNot([]));
     });
 
