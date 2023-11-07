@@ -241,7 +241,7 @@ class Magnet {
   }
 
   // Fetches the user's class attendance
-  Future<Map<String, int>> fetchUserClassAttendance() async {
+  Future<List<Map<String, int>>> fetchUserClassAttendance() async {
     if (await login()) {
       var response = await http.post(
         Uri.parse("$_baseUrl/Dashboard/GetUnitsClassAttendance"),
@@ -249,39 +249,14 @@ class Magnet {
       );
 
       if (response.statusCode == 200) {
-        var html = response.body;
-        Map<String, int> coursesData = {};
-
-        final document = parser.parse(html);
-        final tableRows =
-            document.querySelectorAll('table.table tr td div.col-12');
-
-        for (final row in tableRows) {
-          final columns = row.children;
-
-          if (columns.length >= 2) {
-            final course = columns[0].text.trim();
-            final percentage = columns[1]
-                    .querySelector('.progress-bar')
-                    ?.attributes['style'] ??
-                '0%';
-
-            // Extract the percentage value from the style attribute
-            final match = RegExp(r'width: (\d+)%').firstMatch(percentage);
-            final extractedPercentage = match?.group(1) ?? '0';
-
-            coursesData[course] = int.parse(extractedPercentage);
-          }
-        }
-
-        return coursesData;
+        throw Exception("Not implemented");
       } else {
         throw Exception(
             "Error fetching catering token, please check your internet connection");
       }
     }
 
-    return {};
+    return [];
   }
 
   Future<List<Map<String, dynamic>>> fetchFeeStatement() async {
@@ -320,6 +295,62 @@ class Magnet {
       throw Exception(
           "Error fetching fee statement, please check your connection and try again");
     }
-    return [];
+  }
+
+  // Fetch Academic Calendar
+  Future<List<Map<String, dynamic>>> fetchAcademicCalendar() async {
+    if (await login()) {
+      var response = await http.get(
+        Uri.parse("$_baseUrl/Dashboard/Dashboard"),
+        headers: _header,
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception("Error fetching semester");
+      }
+
+      var dashboard = response.body;
+      var document = parser.parse(dashboard);
+
+      final content =
+          document.querySelector("button.btn.btn-sm.btn-success.form-control");
+
+      var sem = content?.attributes["onclick"]
+          ?.replaceRange(0, 16, "")
+          .replaceAll("(", "")
+          .replaceAll(")", "")
+          .replaceAll(";", "")
+          .replaceAll("'", "");
+      print(sem);
+
+      // Attempt to fetch the String
+      response = await http.post(
+          Uri.parse("$_baseUrl/Common/GetAcademicCalender/"),
+          body: json.encode({"Sem": sem}),
+          headers: _header);
+
+      if (response.statusCode != 200) {
+        throw Exception("Error fetching Academic Calendar");
+      }
+
+      var html = parser.parse(response.body);
+      var table = html.querySelectorAll("tbody tr");
+
+      var events = <Map<String, dynamic>>[];
+
+      for (var row in table) {
+        events.add({
+          "name": row.children[0].innerHtml,
+          "start": row.children[1].innerHtml,
+          "stop": row.children[2].innerHtml,
+        });
+      }
+      print(events);
+
+      return events;
+    } else {
+      throw Exception(
+          "Error Acecessing Session token, please ensure you have internet connection and try again");
+    }
   }
 }

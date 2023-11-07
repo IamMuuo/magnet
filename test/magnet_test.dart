@@ -70,15 +70,22 @@ void main() {
       expect(token["success"], isTrue);
     });
 
-    var courseAttendace = {};
+    var courseAttendace = <Map<String, int>>[];
     test("Fetch Class Attendance", () async {
       courseAttendace = await magnet.fetchUserClassAttendance();
-      expect(courseAttendace, isNot({}));
+      print(courseAttendace);
+      expect(courseAttendace, isNot([]));
     });
 
     var feeStatement = [];
     test('Fetch Fee Statement', () async {
       feeStatement = await magnet.fetchFeeStatement();
+      expect(feeStatement, isNot([]));
+    });
+
+    var calendar = [];
+    test('Fetch Academic Calendar', () async {
+      calendar = await magnet.fetchAcademicCalendar();
       expect(feeStatement, isNot([]));
     });
   });
