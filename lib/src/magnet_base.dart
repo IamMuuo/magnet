@@ -321,7 +321,6 @@ class Magnet {
           .replaceAll(")", "")
           .replaceAll(";", "")
           .replaceAll("'", "");
-      print(sem);
 
       // Attempt to fetch the String
       response = await http.post(
@@ -345,7 +344,6 @@ class Magnet {
           "stop": row.children[2].innerHtml,
         });
       }
-      print(events);
 
       return events;
     } else {

@@ -86,7 +86,7 @@ void main() {
     var calendar = [];
     test('Fetch Academic Calendar', () async {
       calendar = await magnet.fetchAcademicCalendar();
-      expect(feeStatement, isNot([]));
+      expect(calendar, isNot([]));
     });
   });
 }
