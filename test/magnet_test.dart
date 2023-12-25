@@ -87,5 +87,11 @@ void main() {
       calendar = await magnet.fetchAcademicCalendar();
       expect(calendar, isNot([]));
     });
+
+    var math = [];
+    test("Fetch Exam Timetable", () async {
+      math = await magnet.fetchExamTimeTabale("MAT322");
+      expect(math, isNot([]));
+    });
   });
 }

@@ -2,6 +2,7 @@
 // Magner base.dart
 
 import 'dart:convert';
+import 'dart:html';
 import 'package:html/parser.dart' as parser;
 import 'package:http/http.dart' as http;
 
@@ -363,5 +364,20 @@ class Magnet {
       throw Exception(
           "Error Acecessing Session token, please ensure you have internet connection and try again");
     }
+  }
+
+  Future<List<dynamic>> fetchExamTimeTabale(String units,
+      {bool athi = true}) async {
+    // Fetch the unit specified
+    try {
+      var response = await http.get(Uri.parse(
+          'https://exam.dita.co.ke/api/courses?courses=${units.toUpperCase()}&campus_choice=${athi ? 1 : 2}'));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body)["data"];
+      }
+    } catch (e) {
+      rethrow;
+    }
+    return [];
   }
 }
