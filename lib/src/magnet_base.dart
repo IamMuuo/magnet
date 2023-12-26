@@ -2,7 +2,6 @@
 // Magner base.dart
 
 import 'dart:convert';
-import 'dart:html';
 import 'package:html/parser.dart' as parser;
 import 'package:http/http.dart' as http;
 
