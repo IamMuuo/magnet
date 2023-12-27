@@ -88,10 +88,11 @@ void main() {
       expect(calendar, isNot([]));
     });
 
-    var math = [];
+    var units = [];
     test("Fetch Exam Timetable", () async {
-      math = await magnet.fetchExamTimeTabale("MAT322");
-      expect(math, isNot([]));
+      units = await magnet.fetchExamTimeTabale(
+          "ACS 311A, ACS 323A, ACS 354A, ACS 362B, BIL 112B, MAT 322A, ACS 311A, ACS 323A, ACS 354A, ACS 362B, BIL 112B, MAT 322A,");
+      expect(units, isNot([]));
     });
   });
 }

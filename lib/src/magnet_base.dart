@@ -370,7 +370,8 @@ class Magnet {
     // Fetch the unit specified
     try {
       var response = await http.get(Uri.parse(
-          'https://exam.dita.co.ke/api/courses?courses=${units.toUpperCase()}&campus_choice=${athi ? 1 : 2}'));
+          'https://exam.dita.co.ke/api/courses?courses=${units.toUpperCase().replaceAll(" ", "").trim()}&campus_choice=${athi ? 1 : 2}'));
+
       if (response.statusCode == 200) {
         return jsonDecode(response.body)["data"];
       }
