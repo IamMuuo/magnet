@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:magnet/magnet.dart';
 import 'package:test/test.dart';
 import 'package:dotenv/dotenv.dart';
@@ -93,6 +95,18 @@ void main() {
       units = await magnet.fetchExamTimeTabale(
           "ACS 311A, ACS 323A, ACS 354A, ACS 362B, BIL 112B, MAT 322A, ACS 311A, ACS 323A, ACS 354A, ACS 362B, BIL 112B, MAT 322A,");
       expect(units, isNot([]));
+    });
+
+    Uint8List audit;
+    test('Fetch Student Audit', () async {
+      audit = await magnet.fetchStudentAudit(env["USERNAME"]!);
+      expect(audit, isNotNull);
+    });
+
+    Uint8List transcript;
+    test('Fetch Student Transcript', () async {
+      transcript = await magnet.fetchTranscript(env["USERNAME"]!);
+      expect(transcript, isNotNull);
     });
   });
 }

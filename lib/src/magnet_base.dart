@@ -2,6 +2,7 @@
 // Magner base.dart
 
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:html/parser.dart' as parser;
 import 'package:http/http.dart' as http;
 
@@ -379,5 +380,33 @@ class Magnet {
       rethrow;
     }
     return [];
+  }
+
+  Future<Uint8List> fetchTranscript(String admno) async {
+    try {
+      var response = await http.get(Uri.parse(
+          "${_baseUrl.replaceFirst("https", "http")}/Downloads/PROVISIONAL%20RESULTS-$admno.pdf"));
+      if (response.statusCode == 200) {
+        return response.bodyBytes;
+      }
+      throw Exception(
+          "Could not fetch transcript check details and try again otherwise try later");
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Uint8List> fetchStudentAudit(String admno) async {
+    try {
+      var response = await http.get(Uri.parse(
+          "${_baseUrl.replaceFirst("https", "http")}/Downloads/STDAUDIT-$admno.pdf"));
+      if (response.statusCode == 200) {
+        return response.bodyBytes;
+      }
+      throw Exception(
+          "Could not fetch audit check details and try again otherwise try later");
+    } catch (e) {
+      rethrow;
+    }
   }
 }
