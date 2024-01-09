@@ -409,4 +409,17 @@ class Magnet {
       rethrow;
     }
   }
+
+  Future<List<Map<String, dynamic>>> fetchContributors() async {
+    try {
+      var response = await http.get(Uri.parse(
+          "https://api.github.com/repos/IamMuuo/academia/contributors?per_page=100"));
+      if (response.statusCode == 200) {
+        return List<Map<String, dynamic>>.from(jsonDecode(response.body));
+      }
+    } catch (e) {
+      rethrow;
+    }
+    return [];
+  }
 }

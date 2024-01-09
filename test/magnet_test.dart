@@ -108,5 +108,11 @@ void main() {
       transcript = await magnet.fetchTranscript(env["USERNAME"]!);
       expect(transcript, isNotNull);
     });
+
+    var contributors = [];
+    test('Fetch Project Contributors', () async {
+      contributors = await magnet.fetchContributors();
+      expect(contributors, isNotEmpty);
+    });
   });
 }
