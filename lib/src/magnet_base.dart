@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 class Magnet {
   /// The base url to which  requests are made
   static const String _baseUrl = "https://student.daystar.ac.ke";
+  static final String _backendUrl = "http://localhost:8000";
   Map<String, String> _header = {};
   DateTime? _lastLogin;
 
