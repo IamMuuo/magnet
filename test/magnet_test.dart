@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:magnet/magnet.dart';
+import 'package:magnet/src/magnet_utils.dart';
 import 'package:test/test.dart';
 import 'package:dotenv/dotenv.dart';
 
@@ -113,6 +114,13 @@ void main() {
     test('Fetch Project Contributors', () async {
       contributors = await magnet.fetchContributors();
       expect(contributors, isNotEmpty);
+    });
+
+    late List notifications;
+    test('Fetch Notifications', () async {
+      notifications = await magnet.fetchNotifications();
+      print(notifications);
+      expect(notifications, isNotEmpty);
     });
   });
 }
