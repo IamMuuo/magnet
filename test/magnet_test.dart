@@ -119,7 +119,6 @@ void main() {
     late List notifications;
     test('Fetch Notifications', () async {
       notifications = await magnet.fetchNotifications();
-      print(notifications);
       expect(notifications, isNotEmpty);
     });
   });
