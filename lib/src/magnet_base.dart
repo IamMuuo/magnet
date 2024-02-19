@@ -226,16 +226,32 @@ class Magnet {
 
   Future<Map<String, dynamic>> fetchCateringToken() async {
     if (await login()) {
-      var response = await http.post(
-        Uri.parse("$_baseUrl/Dashboard/GenerateNewCateringToken"),
+      var response = await http.get(
+        Uri.parse("$_baseUrl/Dashboard/Dashboard"),
         headers: _header,
       );
 
-      if (response.statusCode != 200) {
-        throw Exception(
-            "Error fetching catering token, please check your internet connection");
-      } else {
-        return json.decode(response.body);
+      if (response.statusCode == 200) {
+        final document = parser.parse(response.body);
+        final buttons = document.querySelectorAll("button");
+
+        for (final button in buttons) {
+          if (button.innerHtml.trim() == "Get Catering Token") {
+            var res = await http.post(
+              Uri.parse("$_baseUrl/Dashboard/GenerateNewCateringToken"),
+              headers: _header,
+            );
+
+            if (res.statusCode != 200) {
+              throw Exception(
+                "Error fetching catering token, please check your internet connection",
+              );
+            } else {
+              return json.decode(res.body);
+            }
+          }
+        }
+        throw Exception("You are not eligible for meals");
       }
     }
     return {};
