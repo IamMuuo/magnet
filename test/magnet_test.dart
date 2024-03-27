@@ -121,5 +121,8 @@ void main() {
       notifications = await magnet.fetchNotifications();
       expect(notifications, isNotEmpty);
     });
+    test('Fetch Random Quotes', () async {
+      expect(await magnet.fetchRandomQuotes(), isNotEmpty);
+    });
   });
 }

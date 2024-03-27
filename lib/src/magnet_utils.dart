@@ -14,4 +14,20 @@ extension MagnetNotificationExtension on Magnet {
     }
     throw Exception("Couldn't fetch notifications, please try again later");
   }
+
+  /// Fetches a random quote from zenquotes.io.
+  ///
+  /// Fetches and returns a list of random quotes
+  Future<List<Map<String, dynamic>>> fetchRandomQuotes() async {
+    try {
+      final response =
+          await http.get(Uri.parse("https://zenquotes.io/api/quotes/"));
+      if (response.statusCode == 200) {
+        return List<Map<String, dynamic>>.from(json.decode(response.body));
+      }
+      throw Exception("Failed to fetch random quote");
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
