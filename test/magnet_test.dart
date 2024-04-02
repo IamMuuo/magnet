@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:magnet/magnet.dart';
+import 'package:magnet/src/magnet_exams.dart';
 import 'package:magnet/src/magnet_utils.dart';
 import 'package:test/test.dart';
 import 'package:dotenv/dotenv.dart';
@@ -93,8 +94,7 @@ void main() {
 
     var units = [];
     test("Fetch Exam Timetable", () async {
-      units = await magnet.fetchExamTimeTabale(
-          "ACS 311A, ACS 323A, ACS 354A, ACS 362B, BIL 112B, MAT 322A, ACS 311A, ACS 323A, ACS 354A, ACS 362B, BIL 112B, MAT 322A,");
+      units = await magnet.fetchExam(["ACS"]);
       expect(units, isNot([]));
     });
 
