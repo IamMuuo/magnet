@@ -1,48 +1,105 @@
-// Copyright (c) 2023 Erick Muuo. All Rights Reserved.
-// Magner base.dart
-
-import 'dart:convert';
+import 'dart:async';
 import 'dart:typed_data';
-import 'package:html/parser.dart' as parser;
-import 'package:http/http.dart' as http;
 
+import 'package:dartz/dartz.dart';
+import 'package:magnet/src/auth/auth.dart';
+import 'package:magnet/src/repository/repository.dart';
+
+/// Copyright (c) 2023 Erick Muuo. All Rights Reserved.
+/// Academia's portal scraping engine
+/// Distributed under the GNU public license
+// You are free to use it as deemed fit
+
+/// Academia's student portal scraping engine
 class Magnet {
-  /// The base url to which  requests are made
-  static const String _baseUrl = "https://student.daystar.ac.ke";
-  Map<String, String> _header = {};
-  DateTime? _lastLogin;
+  String? _admno;
+  String? _password;
+  String? _token;
 
-  final String _username;
-  final String _password;
-  String? _sessionId;
+  /// Private constructor to prevent external instantiation.
+  Magnet._internal();
 
-  Magnet(this._username, this._password);
-  Future<List<dynamic>> fetchExamTimeTabale(String units,
-      {bool athi = true}) async {
-    // Fetch the unit specified
-    try {
-      var response = await http.get(Uri.parse(
-          'https://exam.dita.co.ke/api/courses?courses=${units.toUpperCase().replaceAll(" ", "").trim()}&campus_choice=${athi ? 1 : 2}'));
+  /// The singleton instance of the [Magnet] class.
+  static final Magnet _instance = Magnet._internal();
 
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body)["data"];
-      }
-    } catch (e) {
-      rethrow;
-    }
-    return [];
+  /// Factory constructor for creating a single instance of [Magnet].
+  /// Takes [admission] and [password] as parameters.
+  factory Magnet(String admission, String password) {
+    _instance._admno = admission;
+    _instance._password = password;
+
+    return _instance;
   }
 
-  Future<List<Map<String, dynamic>>> fetchContributors() async {
-    try {
-      var response = await http.get(Uri.parse(
-          "https://api.github.com/repos/IamMuuo/academia/contributors?per_page=100"));
-      if (response.statusCode == 200) {
-        return List<Map<String, dynamic>>.from(jsonDecode(response.body));
-      }
-    } catch (e) {
-      rethrow;
-    }
-    return [];
+  /// Attempts to authenticate a user
+  Future<Either<Exception, String>> login() async {
+    return Auth.fetchSessionToken()
+        .then((value) => value.fold((l) => left(l), (r) {
+              return Auth.login(r, _instance._admno!, _instance._password!)
+                  .then((value) => value.fold((l) => left(l), (r) {
+                        _instance._token = r;
+                        return right(r);
+                      }));
+            }));
+  }
+
+  Repository get repositories => Repository();
+
+  /// Retrieves the admission number.
+  String get admission => _admno!;
+
+  /// Retrieves the admission number.
+  String get token => _token!;
+
+  /// Retrieves the password.
+  String get password => _password!;
+
+  // New function to fetch catering token using the stored token
+  Future<Either<Exception, Map<String, dynamic>>> fetchCateringToken() async {
+    return Repository.fetchCateringToken(_token!);
+  }
+
+  // New function to fetch academic calendar using the stored token
+  Future<Either<Exception, List<Map<String, dynamic>>>>
+      fetchAcademicCalendar() async {
+    return Repository.fetchAcademicCalendar(_token!);
+  }
+
+  // New function to fetch transcript using the stored token
+  Future<Uint8List> fetchTranscript() async {
+    return Repository.fetchTranscript(_admno!);
+  }
+
+  // New function to fetch student audit using the stored token
+  Future<Uint8List> fetchStudentAudit() async {
+    return Repository.fetchStudentAudit(_admno!);
+  }
+
+  // New function to fetch fee statement using the stored token
+  Future<Either<Exception, List<Map<String, dynamic>>>>
+      fetchFeeStatement() async {
+    return Repository.fetchFeeStatement(_token!);
+  }
+
+  // New function to fetch user class attendance using the stored token
+  Future<Either<Exception, List<Map<String, int>>>>
+      fetchUserClassAttendance() async {
+    return Repository.fetchUserClassAttendance(_token!);
+  }
+
+  // New function to fetch user details using the stored token
+  Future<Either<Exception, Map<String, String>>> fetchUserDetails() async {
+    return Repository.fetchUserDetails(_token!);
+  }
+
+  // New function to fetch user timetable using the stored token
+  Future<Either<Exception, List<Map<String, String>>>>
+      fetchUserTimeTable() async {
+    return Repository.fetchUserTimeTable(_token!);
+  }
+
+  // New function to fetch timetable using the stored token
+  Future<Either<Exception, List<Map<String, String>>>> fetchTimeTable() async {
+    return Repository.fetchTimeTable(_token!);
   }
 }
