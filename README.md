@@ -1,53 +1,70 @@
-# 🧲 Magnet - Your Academic Data Scraping Superhero! 🦸‍♂️
+# Magnet 🧲
 
-<img src="assets/logo.png" height=100 alt="Magnet's Logo">
+Magnet is your ultimate scraping engine designed specifically for Daystar University, crafted as an open-source package tailored for Academia, an open-source application. Created by students for students, Magnet simplifies the process of fetching crucial data from Daystar University's online portal, empowering students with easy access to their academic information. 🎓
 
-Welcome to Magnet, your trusty sidekick in the world of web scraping! 🌍
+## Features ✨
 
-## What is Magnet?
+- **Seamless Authentication**: Magnet handles the authentication process effortlessly, ensuring secure access to your academic data. 🔐
+- **Catering Token Retrieval**: Fetch your catering token hassle-free, making sure you never miss a meal! 🍔
+- **Academic Calendar**: Stay updated with the latest academic events and timelines. 📅
+- **Transcript Retrieval**: Get your transcript with just a few lines of code, saving you time and effort. 📜
+- **Student Audit**: Access your student audit conveniently, keeping track of your academic progress. 📊
+- **Fee Statement**: Easily retrieve your fee statement for financial planning. 💰
+- **Class Attendance**: Keep tabs on your class attendance with ease. 📝
+- **User Details**: Access your user details swiftly, ensuring accurate personal information. 📋
+- **User Timetable**: Stay organized with your user timetable readily available. 🕒
+- **Timetable**: Fetch the complete timetable effortlessly. ⏰
 
-Magnet is a powerful and versatile web scraping engine specifically designed to extract academic data from Daystar University's student portal. It's here to save the day and provide you with the data you need for your academia mobile app. 📚
-
-## Features 🚀
-
-- **Effortless Scraping**: With Magnet, you can effortlessly extract student data from the Daystar University portal. No more manual data entry!
-
-- **Data on Demand**: Get access to a wealth of academic information, from course schedules to student profiles, at the tip of your fingers.
-
-- **Customizable**: Magnet is flexible and customizable to your specific needs. Want to extract more data? No problem! Magnet has your back.
-
-- **Easy Integration**: Seamlessly integrate the scraped data into your academia mobile app and provide a seamless user experience.
-
-## How to Use Magnet 🧲
-
-1. **Installation**: Depend on it on your flutter / Dart project
-
-2. **Configuration**: Configure Magnet with the necessary credentials and settings for Daystar University's student portal.
-
-3. **Scrape Away**: Run Magnet and watch it work its magic! It will scrape the data you need and store it in a format you can use.
-
-4. **Integrate**: Integrate the scraped data into your academia mobile app and provide your users with valuable insights.
-
-## Example Code 📝
+## Usage 🚀
 
 ```dart
 import 'package:magnet/magnet.dart';
 
-void main() {
-  final magnet = Magnet("your-username", "your-password");
+void main() async {
+  // Initialize Magnet with your admission number and password
+  final magnet = Magnet('your_admission_number', 'your_password');
 
+  // Authenticate
+  final loginResult = await magnet.login();
+  if (loginResult.isLeft()) {
+    print('Failed to authenticate: ${loginResult.left}');
+    return;
+  }
 
-  // Start scraping data
-  final loginState = await magnet.login();
+  // Fetch Catering Token
+  final cateringTokenResult = await magnet.fetchCateringToken();
+  if (cateringTokenResult.isLeft()) {
+    print('Failed to fetch catering token: ${cateringTokenResult.left}');
+    return;
+  }
+  final cateringToken = cateringTokenResult.right;
 
-  // Get student Data
-  final studentData = await magnet.fetchUserData();
+  // Fetch Academic Calendar
+  final academicCalendarResult = await magnet.fetchAcademicCalendar();
+  if (academicCalendarResult.isLeft()) {
+    print('Failed to fetch academic calendar: ${academicCalendarResult.left}');
+    return;
+  }
+  final academicCalendar = academicCalendarResult.right;
 
-  // Work with the data
-   dosomethingWithData(studentData);
+  // Add more operations as needed...
+
+  print('Catering Token: $cateringToken');
+  print('Academic Calendar: $academicCalendar');
 }
 ```
 
-## Support 💪
+## Get started 🛠️
+As per now you have to directly depend on it from github
+```yaml
 
-If you run into any issues, have questions, or just want to chat about web scraping and academia apps, feel free to reach out to our friendly support team at DITA.
+magnet:
+ git:
+   url: https://github.com/IamMuuo/magnet
+     ref: master
+```
+## Contribution 🤝
+Contributions are welcome! Feel free to fork the repository, make changes, and submit pull requests to enhance Magnet and make it even more useful for Daystar University students.
+
+Let's make academic life at Daystar easier and more enjoyable together with Magnet! 🌟
+

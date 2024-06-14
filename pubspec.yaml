@@ -8,6 +8,7 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
+  dartz: ^0.10.1
   dotenv: ^4.1.0
   html: ^0.15.4
   http: ^1.1.0

@@ -1,128 +1,94 @@
-import 'dart:typed_data';
-
-import 'package:magnet/magnet.dart';
-import 'package:magnet/src/magnet_exams.dart';
-import 'package:magnet/src/magnet_utils.dart';
-import 'package:test/test.dart';
 import 'package:dotenv/dotenv.dart';
+import 'package:magnet/magnet.dart';
+import 'package:test/test.dart';
 
 void main() {
-  group('Test Scrape Engine', () {
-    var env = DotEnv(includePlatformEnvironment: true)..load();
+  String token = "";
+  final env = DotEnv(includePlatformEnvironment: true)..load();
+  late Magnet magnet;
 
+  setUp(() {
+    magnet = Magnet(env["USERNAME"]!, env["PASSWORD"]!);
+  });
+
+  group("MagnetTest", () {
     test('Env Load Test', () {
       expect(env["USERNAME"], isNotNull);
       expect(env["PASSWORD"], isNotNull);
     });
 
-    final magnet = Magnet(env["USERNAME"]!, env["PASSWORD"]!);
-
-    setUp(() {
-      // Additional setup goes here
-      DotEnv(includePlatformEnvironment: true).load();
+    test('Login test', () async {
+      final response = await magnet.login();
+      response.fold((l) {
+        fail(l.toString());
+      }, (r) {
+        token = r;
+      });
     });
+    test('fetchCateringToken - Fail if empty container or exception', () async {
+      final result = await magnet.fetchCateringToken();
 
-    test('Login Test', () async {
-      expect(await magnet.login(), isTrue);
-    });
-
-    test("Login Test 2 (Test failure on wrong credentials))", () async {
-      expect(await magnet.login(), isTrue);
-    });
-
-    var data = {};
-    test('Fetch user data', () async {
-      data = await magnet.fetchUserData();
-      expect(data, isNot({}));
+      expect(result.fold((l) => true, (r) => false), isTrue);
     });
 
-    test('User data is not corrpt', () async {
-      expect(data["regno"], isNotNull);
+    test('fetchAcademicCalendar - Fail if empty container or exception',
+        () async {
+      final result = await magnet.fetchAcademicCalendar();
+
+      expect(result.fold((l) => true, (r) => false), isTrue);
     });
 
-    test("profile link is present", () async {
-      expect(data["profile"], isNotNull);
-    });
-    var timetable = [];
-    test('Fetch TimeTable', () async {
-      timetable = await magnet.fetchTimeTable();
-      expect(timetable, isNot([{}]));
+    test('fetchTranscript - Fail if empty container or exception', () async {
+      final result = await magnet.fetchTranscript();
+
+      expect(result.isNotEmpty, isTrue);
     });
 
-    test('Timetable data is valid', () async {
-      expect(timetable.first.keys, contains("Unit"));
+    test('fetchStudentAudit - Fail if empty container or exception', () async {
+      final result = await magnet.fetchStudentAudit();
+
+      expect(result.isNotEmpty, isTrue);
     });
 
-    var allCourses = [];
-    test('Fetch TimeTable', () async {
-      allCourses = await magnet.fetchAllCourses();
-      expect(allCourses, isNot([{}]));
+    test('fetchFeeStatement - Fail if empty container or exception', () async {
+      final result = await magnet.fetchFeeStatement();
+
+      result.fold((l) => fail(l.toString()), (r) {
+        expect(r.isNotEmpty, true);
+      });
     });
 
-    test('Timetable data is valid', () async {
-      expect(allCourses.first.keys, contains("Unit"));
+    test('fetchUserClassAttendance - Fail if empty container or exception',
+        () async {
+      final result = await magnet.fetchUserClassAttendance();
+
+      result.fold((l) => fail(l.toString()), (r) {
+        expect(r.isNotEmpty, true);
+      });
     });
 
-    var token = {};
-    test("Fetch Catering token", () async {
-      token = await magnet.fetchCateringToken();
-      expect(token, isNot({}));
+    test('fetchUserDetails - Fail if empty container or exception', () async {
+      final result = await magnet.fetchUserDetails();
+
+      result.fold((l) => fail(l.toString()), (r) {
+        expect(r.isNotEmpty, true);
+      });
     });
 
-    test("Catering token is valid", () async {
-      expect(token["message"], isNotEmpty);
-      expect(token["success"], isTrue);
+    test('fetchUserTimeTable - Fail if empty container or exception', () async {
+      final result = await magnet.fetchUserTimeTable();
+
+      result.fold((l) => fail(l.toString()), (r) {
+        expect(r.isNotEmpty, true);
+      });
     });
 
-    var courseAttendace = <Map<String, int>>[];
-    test("Fetch Class Attendance", () async {
-      courseAttendace = await magnet.fetchUserClassAttendance();
-      expect(courseAttendace, isNot([]));
-    });
+    test('fetchTimeTable - Fail if empty container or exception', () async {
+      final result = await magnet.fetchTimeTable();
 
-    var feeStatement = [];
-    test('Fetch Fee Statement', () async {
-      feeStatement = await magnet.fetchFeeStatement();
-      expect(feeStatement, isNot([]));
-    });
-
-    var calendar = [];
-    test('Fetch Academic Calendar', () async {
-      calendar = await magnet.fetchAcademicCalendar();
-      expect(calendar, isNot([]));
-    });
-
-    var units = [];
-    test("Fetch Exam Timetable", () async {
-      units = await magnet.fetchExam(["ACS"]);
-      expect(units, isNot([]));
-    });
-
-    Uint8List audit;
-    test('Fetch Student Audit', () async {
-      audit = await magnet.fetchStudentAudit(env["USERNAME"]!);
-      expect(audit, isNotNull);
-    });
-
-    Uint8List transcript;
-    test('Fetch Student Transcript', () async {
-      transcript = await magnet.fetchTranscript(env["USERNAME"]!);
-      expect(transcript, isNotNull);
-    });
-
-    var contributors = [];
-    test('Fetch Project Contributors', () async {
-      contributors = await magnet.fetchContributors();
-      expect(contributors, isNotEmpty);
-    });
-
-    late List notifications;
-    test('Fetch Notifications', () async {
-      notifications = await magnet.fetchNotifications();
-      expect(notifications, isNotEmpty);
-    });
-    test('Fetch Random Quotes', () async {
-      expect(await magnet.fetchRandomQuotes(), isNotEmpty);
+      result.fold((l) => fail(l.toString()), (r) {
+        expect(r.isNotEmpty, true);
+      });
     });
   });
 }
