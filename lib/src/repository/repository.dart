@@ -278,7 +278,7 @@ class Repository {
 
         dataList.add({
           'unit': unit,
-          'setion': section,
+          'section': section,
           'day_of_the_week': dayOfWeek,
           'period': period,
           'campus': campus,

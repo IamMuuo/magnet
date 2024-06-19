@@ -31,6 +31,7 @@ void main() {
       }, (r) {
         expect(r.isNotEmpty, true);
         expect(r[0].containsKey("unit"), true);
+        expect(r[0].containsKey("section"), true);
       });
     });
 
@@ -41,6 +42,7 @@ void main() {
       }, (r) {
         expect(r.isNotEmpty, true);
         expect(r[0].containsKey("unit"), true);
+        expect(r[0].containsKey("section"), true);
       });
     });
 
