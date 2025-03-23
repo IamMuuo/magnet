@@ -35,6 +35,26 @@ void main() {
       });
     });
 
+    test('Fetch Student Transcript', () async {
+      final response = await Repository.fetchTranscript(token);
+
+      response.fold((error) {
+        fail(error.toString());
+      }, (transcripts) {
+        expect(transcripts.length, 1);
+      });
+    }, tags: ["transcript"]);
+
+    test('Fetch Student Audit', () async {
+      final response = await Repository.fetchTranscript(token);
+
+      response.fold((error) {
+        fail(error.toString());
+      }, (audit) {
+        expect(audit.length, 1);
+      });
+    }, tags: ["audit"]);
+
     test("Fetch student time table", () async {
       final result = await Repository.fetchUserTimeTable(token);
       result.fold((l) {
@@ -45,16 +65,6 @@ void main() {
         expect(r[0].containsKey("section"), true);
       });
     });
-
-    // test("Fetch semester timeline", () async {
-    //   final result = await Repository.fetchAcademicCalendar(token);
-    //   result.fold((l) {
-    //     fail(l.toString());
-    //   }, (r) {
-    //     expect(r.isNotEmpty, true);
-    //     expect(r[0].containsKey("name"), true);
-    //   });
-    // });
 
     test("Fetch fee statement", () async {
       final result = await Repository.fetchFeeStatement(token);

@@ -97,32 +97,65 @@ class Repository {
     }
   }
 
-  static Future<Uint8List> fetchTranscript(String admno) async {
-    try {
-      var response = await http.get(Uri.parse(
-          "${Config.baseUrl.replaceFirst("https", "http")}/Downloads/PROVISIONAL%20RESULTS-$admno.pdf"));
-      if (response.statusCode == 200) {
-        return response.bodyBytes;
+  // Returns all transcripts for a user's enrolled programmes
+  static Future<Either<Exception, List<String>>> fetchTranscript(
+      String token) async {
+    final response = await fetchEnrolledProgrammes(token);
+
+    final List<String> transcripts = [];
+    return response.fold((error) {
+      return left(error);
+    }, (programmes) async {
+      for (final programme in programmes) {
+        // Fetch all user transcripts
+
+        final response = await http.post(
+          Uri.parse("${Config.baseUrl}/ViewDocuments/ProvisionalResults"),
+          headers: Config.generateHeader(token),
+          body: json.encode({"Prog": programme["Value"]!}),
+        );
+
+        if (response.statusCode == 200) {
+          transcripts.add(json.decode(response.body)["message"]!);
+          continue;
+        }
+
+        return left(
+          Exception("Failed to fetch your transcripts please try again later"),
+        );
       }
-      throw Exception(
-          "Could not fetch transcript check details and try again otherwise try later");
-    } catch (e) {
-      rethrow;
-    }
+      return right(transcripts);
+    });
   }
 
-  static Future<Uint8List> fetchStudentAudit(String admno) async {
-    try {
-      var response = await http.get(Uri.parse(
-          "${Config.baseUrl.replaceFirst("https", "http")}/Downloads/STDAUDIT-$admno.pdf"));
-      if (response.statusCode == 200) {
-        return response.bodyBytes;
+  static Future<Either<Exception, List<String>>> fetchStudentAudit(
+      String token) async {
+    final response = await fetchEnrolledProgrammes(token);
+
+    final List<String> audits = [];
+    return response.fold((error) {
+      return left(error);
+    }, (programmes) async {
+      for (final programme in programmes) {
+        // Fetch all user audits
+
+        final response = await http.post(
+          Uri.parse("${Config.baseUrl}/ViewDocuments/GenerateStudentAudit"),
+          headers: Config.generateHeader(token),
+          body: json.encode({"Prog": programme["Value"]!}),
+        );
+
+        if (response.statusCode == 200) {
+          audits.add(json.decode(response.body)["message"]!);
+          continue;
+        }
+
+        return left(
+          Exception("Failed to fetch your audits please try again later"),
+        );
       }
-      throw Exception(
-          "Could not fetch audit check details and try again otherwise try later");
-    } catch (e) {
-      rethrow;
-    }
+      return right(audits);
+    });
   }
 
   /// Fetches a student's fee statement
@@ -334,6 +367,27 @@ class Repository {
         });
       }
       return Right(dataList);
+    } catch (e) {
+      return left(Exception(e.toString()));
+    }
+  }
+
+  /// Fetches a student's enrolled programmes
+  static Future<Either<Exception, List<Map<String, dynamic>>>>
+      fetchEnrolledProgrammes(String token) async {
+    try {
+      final response = await http.get(
+        Uri.parse("${Config.baseUrl}/ViewDocuments/GetEnrolledProgrammes"),
+        headers: Config.generateHeader(token),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body)["ListOfValues"]
+            .cast<Map<String, dynamic>>();
+        return right(data);
+      }
+
+      throw "The server responded with an invalid response.. please wait it might be under maintenance";
     } catch (e) {
       return left(Exception(e.toString()));
     }
