@@ -41,13 +41,13 @@ void main() {
     test('fetchTranscript - Fail if empty container or exception', () async {
       final result = await magnet.fetchTranscript();
 
-      expect(result.isNotEmpty, isTrue);
+      expect(result.isLeft(), false);
     });
 
     test('fetchStudentAudit - Fail if empty container or exception', () async {
       final result = await magnet.fetchStudentAudit();
 
-      expect(result.isNotEmpty, isTrue);
+      expect(result.isLeft, false);
     });
 
     test('fetchFeeStatement - Fail if empty container or exception', () async {

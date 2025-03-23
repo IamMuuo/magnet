@@ -66,12 +66,12 @@ class Magnet {
   }
 
   // New function to fetch transcript using the stored token
-  Future<Uint8List> fetchTranscript() async {
-    return Repository.fetchTranscript(_admno!);
+  Future<Either<Exception, List<String>>> fetchTranscript() async {
+    return Repository.fetchTranscript(_token!);
   }
 
   // New function to fetch student audit using the stored token
-  Future<Uint8List> fetchStudentAudit() async {
+  Future<Either<Exception, List<String>>> fetchStudentAudit() async {
     return Repository.fetchStudentAudit(_admno!);
   }
 
