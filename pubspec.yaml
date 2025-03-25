@@ -12,6 +12,7 @@ dependencies:
   dotenv: ^4.1.0
   html: ^0.15.4
   http: ^1.1.0
+  logger: ^2.5.0
   # path: ^1.8.0
 
 dev_dependencies:

@@ -43,7 +43,7 @@ void main() {
       }, (transcripts) {
         expect(transcripts.length, 1);
       });
-    }, tags: ["transcript"]);
+    });
 
     test('Fetch Student Audit', () async {
       final response = await Repository.fetchTranscript(token);
@@ -53,7 +53,7 @@ void main() {
       }, (audit) {
         expect(audit.length, 1);
       });
-    }, tags: ["audit"]);
+    });
 
     test("Fetch student time table", () async {
       final result = await Repository.fetchUserTimeTable(token);

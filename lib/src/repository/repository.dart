@@ -1,14 +1,15 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:dartz/dartz.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
+import 'package:logger/logger.dart';
 import 'package:magnet/src/config/config.dart';
 
 /// The Repository class provides an efficient way to query for student
 /// data.
 class Repository {
+  static final Logger _logger = Logger();
   static Future<Either<Exception, Map<String, dynamic>>> fetchCateringToken(
       String token) async {
     try {
@@ -100,10 +101,12 @@ class Repository {
   // Returns all transcripts for a user's enrolled programmes
   static Future<Either<Exception, List<String>>> fetchTranscript(
       String token) async {
+    _logger.i("Fetching student transcript");
     final response = await fetchEnrolledProgrammes(token);
 
     final List<String> transcripts = [];
     return response.fold((error) {
+      _logger.e(error);
       return left(error);
     }, (programmes) async {
       for (final programme in programmes) {
@@ -117,8 +120,13 @@ class Repository {
 
         if (response.statusCode == 200) {
           transcripts.add(json.decode(response.body)["message"]!);
+          _logger.i("transcript fetched successfully");
           continue;
         }
+
+        _logger.e(
+          "The server responded with ${response.statusCode} please try the operation again later",
+        );
 
         return left(
           Exception("Failed to fetch your transcripts please try again later"),
@@ -130,15 +138,15 @@ class Repository {
 
   static Future<Either<Exception, List<String>>> fetchStudentAudit(
       String token) async {
+    _logger.i("Fetching student audit");
     final response = await fetchEnrolledProgrammes(token);
 
     final List<String> audits = [];
     return response.fold((error) {
+      _logger.e(error);
       return left(error);
     }, (programmes) async {
       for (final programme in programmes) {
-        // Fetch all user audits
-
         final response = await http.post(
           Uri.parse("${Config.baseUrl}/ViewDocuments/GenerateStudentAudit"),
           headers: Config.generateHeader(token),
@@ -149,6 +157,10 @@ class Repository {
           audits.add(json.decode(response.body)["message"]!);
           continue;
         }
+
+        _logger.e(
+          "The server responded with ${response.statusCode} please try the operation again later",
+        );
 
         return left(
           Exception("Failed to fetch your audits please try again later"),
@@ -376,6 +388,7 @@ class Repository {
   static Future<Either<Exception, List<Map<String, dynamic>>>>
       fetchEnrolledProgrammes(String token) async {
     try {
+      _logger.t("Fetching enrolled programmes");
       final response = await http.get(
         Uri.parse("${Config.baseUrl}/ViewDocuments/GetEnrolledProgrammes"),
         headers: Config.generateHeader(token),
@@ -384,11 +397,17 @@ class Repository {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body)["ListOfValues"]
             .cast<Map<String, dynamic>>();
+        _logger.i("Enrolled programmes fetched");
         return right(data);
       }
 
-      throw "The server responded with an invalid response.. please wait it might be under maintenance";
+      _logger.e(
+        "The server responded with an invalid response.. [${response.statusCode}] please wait it might be under maintenance",
+      );
+
+      throw "The server responded with an invalid response [${response.statusCode}].. please wait it might be under maintenance";
     } catch (e) {
+      _logger.e(e);
       return left(Exception(e.toString()));
     }
   }
