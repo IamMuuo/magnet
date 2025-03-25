@@ -72,7 +72,7 @@ class Magnet {
 
   // New function to fetch student audit using the stored token
   Future<Either<Exception, List<String>>> fetchStudentAudit() async {
-    return Repository.fetchStudentAudit(_admno!);
+    return Repository.fetchStudentAudit(_token!);
   }
 
   // New function to fetch fee statement using the stored token
